@@ -10,14 +10,16 @@ module.exports = {
   },
   // 继承 eslint 推荐的规则集，vue 基本的规则集，prettier 推荐的规则集
   extends: ['eslint:recommended'],
+  parser: '@babel/eslint-parser', // 解析器，默认使用 Espree，支持最新的最终 ECMAScript 标准
   // 指定解析器选项
   parserOptions: {
     ecmaVersion: 6, // es6
-    sourceType: 'module', // es module
-    allowImportExportEverywhere: true
+    sourceType: 'module' // es module
+    // allowImportExportEverywhere: true, // 不限制 eslint 对 import 使用位置
   },
   // 忽略文件 相当于 .eslintignore 文件
   ignorePatterns: ['node_moudules', 'dist', 'src/**/**.test.ts'],
+  plugins: ['import'], // 解决动态导入 import 语法报错问题 --> 实际使用 eslint-plugin-import 的规则解决的
   rules: {
     // https://eslint.org/docs/rules/
     // eslint校验不成功后，error 或 2 则报错，warn 或 1 则警告，off 或 0 则无提示

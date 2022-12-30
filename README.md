@@ -164,3 +164,75 @@ module.exports = {
   ]
 };
 ```
+
+- Babel 为编译的每个文件都插入了辅助代码，使代码体积过大
+- Babel 对一些公共方法使用了非常小的辅助代码，比如 `_extend`，默认情况下会被添加到每一个需要它的文件中，可以将这些辅助代码作为一个独立模块，来避免重复引入
+- @babel/plugin-transform-runtime: 禁用了 Babel 自动对每个文件的 runtime 注入，而是引入 @babel/plugin-transform-runtime 并且使所有辅助代码从这里引用
+
+```shell
+npm i @babel/plugin-transform-runtime -D # 待确认
+npm i @babel/eslint-parser eslint-plugin-import -D
+```
+
+## js 压缩
+
+```shell
+npm i terser-webpack-plugin -D
+```
+
+- 避免在生产环境下才会用到的工具
+  某些 utility, plugin 和 loader 都只用于生产环境。例如，在开发环境下使用 TerserPlugin 来 minify(压缩) 和 mangle(混淆破坏) 代码是没有意义的，通常在开发环境下，应该排除以下这些工具：
+  TerserPlugin
+  [fullhash]/[chunkhash]/[contenthash]
+  AggressiveSplittingPlugin
+  AggressiveMergingPlugin
+  ModuleConcatenationPlugin
+
+## 图片压缩
+
+- 如果项目中图片都是在线链接，那么就不需要了，本地项目静态图片才需要进行压缩
+
+```shell
+npm i image-minimizer-webpack-plugin imagemin -D
+# 无损压缩
+npm install imagemin-gifsicle imagemin-jpegtran imagemin-optipng imagemin-svgo -D
+```
+
+```js
+const ImageMinimizerWebpackPlugin = require('image-minimizer-webpack-plugin');
+
+module.exports = {
+  optimization: {
+    minimizer: [
+      // 压缩图片 无损压缩配置
+      new ImageMinimizerWebpackPlugin({
+        minimizer: {
+          implementation: ImageMinimizerWebpackPlugin.imageminGenerate,
+          options: {
+            plugins: [
+              ['gifsicle', { interlaced: true }],
+              ['jpegtran', { progressive: true }],
+              ['optipng', { optimizationLevel: 5 }],
+              [
+                'svgo',
+                {
+                  plugins: [
+                    'preset-default',
+                    'prefixIds',
+                    {
+                      name: 'sortAttrs',
+                      params: {
+                        xmlnsOrder: 'alphabetical'
+                      }
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        }
+      })
+    ]
+  }
+};
+```

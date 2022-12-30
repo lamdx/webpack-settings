@@ -1,6 +1,9 @@
+const os = require('os');
 const path = require('path'); // nodejs 核心模块，专门用来处理路径问题
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ESLintPlugin = require('eslint-webpack-plugin');
+const ESLintWebpackPlugin = require('eslint-webpack-plugin');
+
+const threads = os.cpus().length; // cpu 核数，多进程
 
 module.exports = {
   // 入口
@@ -79,8 +82,29 @@ module.exports = {
           },
           {
             test: /\.js$/,
-            exclude: /node_modules/, // 排除 node_modules 下的文件，其他文件都处理
-            loader: 'babel-loader'
+            // exclude: /node_modules/, // 排除 node_modules 下的文件，其他文件都处理
+            include: path.resolve(__dirname, '../src'), // 也可以用包含
+            // loader: 'babel-loader',
+            // options: {
+            //   cacheDirectory: true, // 开启 babel 编译缓存
+            //   cacheCompression: false // 缓存文件不要压缩
+            // }
+            use: [
+              {
+                loader: 'thread-loader', // 开启多进程
+                options: {
+                  workers: threads // 数量
+                }
+              },
+              {
+                loader: 'babel-loader',
+                options: {
+                  cacheDirectory: true, // 开启 babel 编译缓存
+                  cacheCompression: false, // 缓存文件不要压缩
+                  plugins: ['@babel/plugin-transform-runtime'] // 减少代码体积 ？
+                }
+              }
+            ]
           }
         ]
       }
@@ -89,9 +113,14 @@ module.exports = {
   // 插件
   plugins: [
     // plugin 的配置
-    new ESLintPlugin({
+    new ESLintWebpackPlugin({
       // 检测哪些文件
-      context: path.resolve(__dirname, '../src')
+      context: path.resolve(__dirname, '../src'),
+      exclude: 'node_modules', // 默认值
+      cache: true, // 开启缓存
+      // 缓存目录
+      cacheLocation: path.resolve(__dirname, '../node_modules/.cache/.eslintcache'),
+      threads // 开启多进程
     }),
     new HtmlWebpackPlugin({
       // 模板：以 public/index.html 文件创建新的 html 文件
@@ -99,11 +128,20 @@ module.exports = {
       template: path.resolve(__dirname, '../public/index.html')
     })
   ],
+  optimization: {
+    // 开发模式下不需要压缩
+    // 代码分割配置
+    splitChunks: {
+      chunks: 'all'
+      // 其他都用默认值
+    }
+  },
   // 开发服务器: 不会输出资源，在内存中编译打包的
   devServer: {
     host: 'localhost', // 启动服务器域名
     port: '3000', // 启动服务器端口号
-    open: true // 是否自动打开浏览器
+    open: true, // 是否自动打开浏览器
+    hot: true // 默认开启了 HMR 功能(只能用于开发环境，生产环境不需要了)
   },
   // 模式
   mode: 'development',
