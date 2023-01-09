@@ -15,15 +15,14 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-// 解决 vue 文件打包构建报错
-process.env.NODE_ENV = 'production';
-
 const threads = os.cpus().length; // cpu 核数，多进程
+// cross-env 定义的环境变量给 webpack 打包工具使用
+const isProduction = process.env.NODE_ENV === 'production';
 
 // 用来获取处理样式的 loader
 function getStyleLoader(pre) {
   return [
-    MiniCssExtractPlugin.loader, // 提取 css 成单独文件
+    isProduction ? MiniCssExtractPlugin.loader : 'vue-style-loader',
     'css-loader', // 将 css 资源编译成 commonjs 的模块到 js 中
     {
       // 处理 css 兼容性问题，配合 package.json 中 browserslist 来指定兼容性适配的程度
@@ -182,15 +181,15 @@ module.exports = {
     new HtmlWebpackPlugin({
       // 模板：以 public/index.html 文件创建新的 html 文件
       // 新的 html 文件特点：1. 结构和原来一致 2. 自动引入打包输出的资源
-      template: path.resolve(__dirname, '../public/index.html'),
-      filename: 'index.html'
+      template: path.resolve(__dirname, '../public/index.html')
     }),
     // 提取 css 成单独文件
-    new MiniCssExtractPlugin({
-      // 对输出的 css 文件进行重命名
-      filename: 'static/css/[name]-[contenthash:8].css',
-      chunkFilename: 'static/css/[name].[contenthash:8].chunk.css'
-    }),
+    isProduction &&
+      new MiniCssExtractPlugin({
+        // 对输出的 css 文件进行重命名
+        filename: 'static/css/[name]-[contenthash:8].css',
+        chunkFilename: 'static/css/[name].[contenthash:8].chunk.css'
+      }),
     // css 压缩
     // new CssMinimizerPlugin()
     // new PreloadWebpackPlugin({
@@ -210,26 +209,28 @@ module.exports = {
       __VUE_OPTIONS_API__: true,
       __VUE_PROD_DEVTOOLS__: false,
       'process.env': {
-        NODE_ENV: '"production"'
+        NODE_ENV: `"${process.env.NODE_ENV}"`
+        // NODE_ENV: JSON.stringify(process.env.NODE_ENV)
       }
     }),
     // CopyWebpackPlugin 这个插件需要源文件夹 from 有排除选项 ignore 之外的文件
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, '../public'),
-          to: path.resolve(__dirname, '../dist'),
-          globOptions: {
-            // 忽略 index.html 文件，因为 HtmlWebpackPlugin 有生成模板文件 index.html
-            ignore: ['**/index.html']
+    isProduction &&
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, '../public'),
+            to: path.resolve(__dirname, '../dist'),
+            globOptions: {
+              // 忽略 index.html 文件，因为 HtmlWebpackPlugin 有生成模板文件 index.html
+              ignore: ['**/index.html']
+            }
           }
-        }
-      ]
-    }),
-    new BundleAnalyzerPlugin()
-  ],
+        ]
+      }),
+    isProduction && new BundleAnalyzerPlugin()
+  ].filter(Boolean),
   optimization: {
-    minimize: true,
+    minimize: isProduction,
     // 压缩的操作
     minimizer: [
       // css 压缩 也可以写到 optimization.minimizer里面，效果一样的
@@ -348,7 +349,16 @@ module.exports = {
       '@': path.resolve(__dirname, '../src')
     }
   },
+  // 开发服务器: 不会输出资源，在内存中编译打包的
+  devServer: {
+    host: 'localhost', // 启动服务器域名
+    port: 'auto', // 启动服务器端口号
+    open: true, // 是否自动打开浏览器
+    hot: true, // 默认开启了 HMR 功能(只能用于开发环境，生产环境不需要了)
+    historyApiFallback: true // 解决前端路由刷新 404 问题
+  },
   // 模式
-  mode: 'production',
-  devtool: 'source-map'
+  mode: isProduction ? 'production' : 'development',
+  devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
+  performance: false // ?
 };

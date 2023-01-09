@@ -22,7 +22,6 @@ promise.then(() => {
   console.log('hello promise');
 });
 
-
 // 判断是否支持 HMR 功能
 // if (module.hot) {
 //   module.hot.accept('./js/count.js', function(count) {
