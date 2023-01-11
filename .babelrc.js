@@ -42,5 +42,14 @@ module.exports = {
     ]
     // 'stage-2'
     // '@babel/preset-react'
+  ],
+  plugins: [
+    [
+      'component',
+      {
+        libraryName: 'element-ui',
+        styleLibraryName: 'theme-chalk'
+      }
+    ]
   ]
 };

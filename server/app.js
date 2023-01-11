@@ -36,8 +36,49 @@ server.on('request', (request, res) => {
   // 2. 根据路径处理响应
   const url = request.url;
   const response = { errorCode: '0000' };
-  if (url === '/api/test') {
-    response.list = [{ name: 'jack', age: 18 }];
+  if (url === '/api/list') {
+    response.list = [
+      {
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄',
+        hobby: '1'
+      },
+      {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1517 弄',
+        hobby: '2'
+      },
+      {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄',
+        hobby: '3'
+      },
+      {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄',
+        hobby: '1'
+      }
+    ];
+  } else if (url === '/api/options') {
+    response.data = [
+      {
+        value: '1',
+        label: '篮球'
+      },
+      {
+        value: '2',
+        label: '足球',
+        disabled: true
+      },
+      {
+        value: '3',
+        label: '台球'
+      }
+    ];
   } else {
     response.message = '404 Not Found.';
   }

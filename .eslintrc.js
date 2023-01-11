@@ -101,7 +101,7 @@ module.exports = {
     // 强制使用一致的缩进 <template>
     'vue/html-indent': 'error',
     // 强制每行的最大属性数
-    'vue/max-attributes-per-line': ['error', { singleline: 3, multiline: 1 }],
+    'vue/max-attributes-per-line': ['error', { singleline: 4, multiline: 1 }],
     // 强制执行属性 attributes 顺序
     'vue/attributes-order': 'error',
     // 强制组件中的属性顺序 properties in components

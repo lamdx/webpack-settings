@@ -306,9 +306,9 @@ module.exports = {
           name: 'vue',
           priority: 40
         },
-        elementPlus: {
-          test: /[\\/]node_modules[\\/]element-plus[\\/]/,
-          name: 'elementPlus',
+        elementUi: {
+          test: /[\\/]node_modules[\\/]element-ui[\\/]/,
+          name: 'elementUi',
           priority: 30
         },
         echarts: {

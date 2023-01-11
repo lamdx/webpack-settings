@@ -21,6 +21,9 @@ import '@/assets/images';
 // filter 过滤器
 import './filters';
 
+// 按需引入 element-ui
+import '@/element-ui';
+
 // 关闭 Vue 在启动时生成生产提示
 Vue.config.productionTip = false;
 
