@@ -3,6 +3,7 @@
     <el-table
       ref="table"
       v-bind="$attrs"
+      :data="tableData"
       tooltip-effect="dark"
       v-on="$listeners"
     >
@@ -42,9 +43,9 @@
     </el-table>
     <div v-show="total > 0">
       <el-pagination
-        :current-page="currentPage"
+        :current-page="params.pageNumber"
         :page-sizes="[10, 20, 30, 40]"
-        :page-size="pageSize"
+        :page-size="params.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handleSizeChange"
@@ -60,75 +61,89 @@ import { getItem, setItem } from '@/utils/storage.js';
 export default {
   name: 'MyTable',
   props: {
-    tableColumns: { tpye: Array, default: () => [] },
-    searchParams: { tpye: Array, default: () => ({}) }
+    autoRequest: {
+      type: Boolean,
+      default: true // 默认为 true，如果条件 searchParams 是异步的可以将 autoRequest 设置为 false，父组件通过 $refs 调用 init 方法
+    },
+    requestMethod: { type: Function, default: () => {} },
+    searchParams: { type: Object, default: () => ({}) },
+    tableData: { type: Array, default: () => [] },
+    tableColumns: { type: Array, default: () => [] }
   },
   data() {
     return {
       refresh: true,
-      loading: false,
+      isLoading: false,
       params: {},
-      currentPage: 5,
       total: 100,
-      pageSize: 10,
-      dictList: [{ key: 'hobby', fn: this.$api.getOptions }],
+      dictList: [
+        { key: 'hobby', queryMethod: this.$api.getOptions },
+        { key: 'hobby1', queryMethod: this.$api.getOptions }
+      ],
       dictMap: {}
     };
   },
   watch: {
     searchParams: {
       handler(val) {
-        this.params = deepCopy(val);
-      }
+        const { pageSize } = this.params;
+        // 保留原来的 pageSize，重置第一页
+        this.params = Object.assign(deepCopy(val), { pageNumber: 1, pageSize });
+        this.init();
+      },
+      deep: true // 是否开启深度监听，searchParams 是对象，searchParams.xxx 也可以被监听到
+      // immediate: true
     }
   },
   created() {
     console.log('this.$attrs ===', this.$attrs);
-    this.init();
+    if (this.autoRequest) {
+      this.params = Object.assign(deepCopy(this.searchParams));
+      this.init();
+    }
   },
   methods: {
-    handleSizeChange(size) {
-      console.log(`每页 ${size} 条`);
-      // this.searchParams.pageNumber = 1;
-      // this.searchParams.pageSize = size;
-      this.currentPage = 1;
-      this.pageSize = size;
-      this.handleQuery();
+    async init() {
+      const needTransferCol = this.tableColumns.filter(
+        item => item.isNeedTransfer
+      );
+      // 如果有对应列内容需要远程转义
+      if (needTransferCol.length) {
+        this.dictList = this.dictList.filter(dict =>
+          needTransferCol.some(col => col.prop === dict.key)
+        );
+        await this.initDicts();
+        this.initTableColumns();
+      }
+      this.handleQuery(this.params);
     },
-    handleCurrentChange(number) {
-      console.log(`当前页: ${number}`);
-      // this.searchParams.pageNumber = number;
-      this.currentPage = number;
-      this.handleQuery();
-    },
-    init() {
-      this.initDicts(this.dictList, this.initTableColumns);
-    },
-    initDicts(cacheList, callback) {
-      cacheList = [...new Set(cacheList)];
-      const promises = [];
-      cacheList.forEach(item => {
-        promises.push(this.getDicts(item));
-      });
-      Promise.all(promises).then(res => {
-        console.log('Promise.all res ===', res);
-        res.forEach((item, i) => {
-          this.dictMap[cacheList[i].key] = item;
+    initDicts() {
+      return new Promise(resolve => {
+        const cacheList = [...new Set(this.dictList)];
+        const promises = [];
+        cacheList.forEach(item => {
+          promises.push(this.getDict(item));
         });
-        console.log('dictMap ===', this.dictMap);
-        callback && callback();
+        Promise.all(promises).then(res => {
+          console.log('Promise.all res ===', res);
+          res.forEach((item, i) => {
+            this.dictMap[cacheList[i].key] = item;
+          });
+          console.log('dictMap ===', this.dictMap);
+          resolve(res);
+        });
       });
     },
-    getDicts(item) {
+    getDict(item) {
       return new Promise(resolve => {
         const list = getItem(item.key, 'session');
         console.log('getItem list ===', list);
-        // if (list?.length > 0) {
-        //   resolve(list);
-        //   return;
-        // }
+        if (list?.length > 0) {
+          resolve(list);
+          return;
+        }
         item
-          .fn()
+          .queryMethod()
           .then(res => {
             setItem(item.key, res.data, 'session');
             resolve(res.data);
@@ -139,36 +154,54 @@ export default {
       });
     },
     initTableColumns() {
-      if (this.tableColumns.length > 0) {
-        this.tableColumns.forEach(column => {
-          if (column.isNeedTransfer === true) {
-            column.formatter = row => {
-              const options = this.dictMap[column.prop];
-              console.log('init options ===', options);
-              const obj = options.find(item => item.value === row[column.prop]);
-              return obj.label;
-            };
-          }
-        });
-        this.handleQuery();
+      this.tableColumns.forEach(column => {
+        if (column.isNeedTransfer === true) {
+          column.formatter = row => {
+            const options = this.dictMap[column.prop];
+            // console.log('init options ===', options);
+            const obj = options.find(item => item.value === row[column.prop]);
+            return obj?.label || '--';
+          };
+        }
+      });
+    },
+    handleQuery(params) {
+      try {
+        if (!params.pageNumber) {
+          throw new Error('params.pageNumber 不能为空');
+        }
+        if (!params.pageSize) {
+          throw new Error('params.pageSize 不能为空');
+        }
+        // 防止重复请求，数据加载中
+        if (this.isLoading) return;
+        this.isLoading = true;
+        this.requestMethod(params)
+          .then(res => {
+            console.log('getList res ===', res);
+            const list = res?.list || [];
+            this.$emit('request-success', list);
+          })
+          .catch(err => {
+            console.log('getList err ===', err);
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
+      } catch (error) {
+        console.log(error);
       }
     },
-    handleQuery() {
-      if (!this.searchParams) {
-        return false;
-      }
-      // 数据加载中
-      this.loading = true;
-      this.$api
-        .getList()
-        .then(res => {
-          console.log('getList res ===', res);
-          const list = res?.list || [];
-          this.$emit('request-success', list);
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+    handleSizeChange(size) {
+      console.log(`每页 ${size} 条`);
+      this.params.pageNumber = 1;
+      this.params.pageSize = size;
+      this.handleQuery(this.params);
+    },
+    handleCurrentChange(number) {
+      console.log(`当前页: ${number}`);
+      this.params.pageNumber = number;
+      this.handleQuery(this.params);
     }
   }
 };
