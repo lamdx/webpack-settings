@@ -10,26 +10,18 @@
       v-model="value"
       placeholder="请选择"
       clearable
-      :req="$api.getOptions"
+      :requestMethod="$api.getOptions"
     >
       <template v-slot:option="{ item }">
         <div class="opt">
           <span>{{ item.label }}</span>
           <span>{{ item.value }}</span>
         </div>
-        <!-- <span style="float: left">{{ item.label }}</span>
-        <span style="float: right; color: #8492a6; font-size: 13px">{{
-          item.value
-        }}</span> -->
       </template>
     </MySelect>
-    <h1>
-      123
-      {{ value }}
-    </h1>
     <MySelect :options="options" multiple collapse-tags></MySelect>
-    <!-- <TimeAxis></TimeAxis>
-    <el-table :data="tableData" style="width: 100%">
+    <!-- <TimeAxis></TimeAxis> -->
+    <!-- <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="date" label="日期" width="180"> </el-table-column>
       <el-table-column prop="name" label="姓名" width="180"> </el-table-column>
       <el-table-column prop="changeress" label="地址"> </el-table-column>
@@ -43,7 +35,7 @@
       border
       highlight-current-row
       @request-success="requestSuccess"
-      @selection-change="change"
+      @selection-change="changeSelection"
     >
       <template v-slot:header-name>
         <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
@@ -81,7 +73,28 @@ export default {
   name: 'Home',
   data() {
     return {
-      options: [],
+      options: [
+        {
+          value: '选项1',
+          label: '黄金糕'
+        },
+        {
+          value: '选项2',
+          label: '双皮奶'
+        },
+        {
+          value: '选项3',
+          label: '蚵仔煎'
+        },
+        {
+          value: '选项4',
+          label: '龙须面'
+        },
+        {
+          value: '选项5',
+          label: '北京烤鸭'
+        }
+      ],
       value: '',
       search: '',
       tableData: [],
@@ -181,14 +194,6 @@ export default {
       const res = this.num - 1;
       this.setNum(res);
     },
-    dd() {
-      this.$api.getOptions().then(res => {
-        this.options = res.options;
-      });
-      setTimeout(() => {
-        console.log(123);
-      }, 1000);
-    },
     add() {
       this.searchParams.other += 1;
       const res = this.num + 1;
@@ -202,7 +207,7 @@ export default {
     deleteRow(row) {
       console.log('row ===', row);
     },
-    change(selection) {
+    changeSelection(selection) {
       console.log('selection ===', selection);
     },
     requestSuccess(list) {

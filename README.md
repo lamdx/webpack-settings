@@ -296,3 +296,31 @@ npm i vue-template-compiler@2 -D
 ```shell
 [webpack-cli] Error: Compiling RuleSet failed: Properties generator are unknown (at ruleSet[0].rules[0]: [object Object])
 ```
+
+- element-ui **自定义主题**需要留意一下 sass 的版本
+
+```shell
+Deprecation Warning: $weight: Passing a number without unit % (0) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+Deprecation Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
+
+# sass 废弃了某些内容
+```
+
+```shell
+npm i sass@1.5 sass
+```
+
+- 在本地启动一个静态文件服务器，可以使用 serve 工具
+
+```shell
+npm i serve -g
+```
+
+```shell
+serve dist
+```

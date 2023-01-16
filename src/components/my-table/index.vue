@@ -65,7 +65,7 @@ export default {
       type: Boolean,
       default: true // 默认为 true，如果条件 searchParams 是异步的可以将 autoRequest 设置为 false，父组件通过 $refs 调用 init 方法
     },
-    requestMethod: { type: Function, default: () => {} },
+    requestMethod: { type: Function, default: () => Promise.resolve() },
     searchParams: { type: Object, default: () => ({}) },
     tableData: { type: Array, default: () => [] },
     tableColumns: { type: Array, default: () => [] }

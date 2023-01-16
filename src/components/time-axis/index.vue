@@ -33,7 +33,7 @@ export default {
   }
 };
 </script>
-<style scoped lang="less">
+<style scoped lang="scss">
 .options_list {
   font-size: 12px;
   .item {

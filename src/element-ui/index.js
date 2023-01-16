@@ -78,6 +78,7 @@ import {
   Message,
   Notification
 } from 'element-ui';
+import './element-variables.scss';
 
 Vue.use(Pagination);
 Vue.use(Dialog);
