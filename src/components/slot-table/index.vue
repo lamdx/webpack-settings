@@ -22,24 +22,20 @@
         :show-overflow-tooltip="item.isTooltip"
         :selectable="item.selected"
       >
-        <!-- 具名插槽使用了 v-slot:代替了 2.6 之前的 slot=的写法，还是比较好看出来的，跟 default 不同就是 v-slot 要写在 template 标签上，否则如果有多个插槽时，会没法控制特定插槽 -->
-        <!-- 自定义表格头部 -->
-        <template v-if="item.header" v-slot:header>
-          <slot :name="'header-' + item.header"></slot>
+        <template
+          :slot="item.type === 'expand' || item.slot ? 'default' : ''"
+          slot-scope="scope"
+        >
+          <slot
+            v-if="item.type === 'expand'"
+            name="expand"
+            :row="scope.row"
+          ></slot>
+          <slot v-else :name="item.slot" :row="scope.row"></slot>
         </template>
-        <!-- 自定义行内容 -->
-        <template v-if="item.slot" v-slot="scope">
-          <slot :name="item.slot" :row="scope.row"></slot>
+        <template :slot="item.header ? 'header' : ''" slot-scope="scope">
+          <slot :name="'header-' + item.header" :row="scope.row"></slot>
         </template>
-        <!-- 展开行，当行内容过多并且不想显示横向滚动条时，可以使用 Table 展开行功能 -->
-        <template v-else-if="item.type === 'expand'" v-slot="scope">
-          <slot name="expand" :row="scope.row"></slot>
-        </template>
-
-        <!-- 使用函数式组件进行 dom 渲染 -->
-        <!-- <template v-if="item.render" v-slot="scope">
-          <render-dom :render="() => item.render(scope.row)"></render-dom>
-        </template> -->
       </el-table-column>
     </el-table>
     <div v-show="total > 0">
@@ -60,7 +56,7 @@
 import { deepCopy } from '@/utils/index';
 import { getItem, setItem } from '@/utils/storage.js';
 export default {
-  name: 'MyTable',
+  name: 'SlotTable',
   props: {
     autoRequest: {
       type: Boolean,

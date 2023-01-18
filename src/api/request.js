@@ -66,30 +66,29 @@ instance.interceptors.response.use(
       return Promise.reject(res);
     } else {
       // 如果与后端约定好状态码 errorCode，需要在业务逻辑中处理，不需要 http 中拦截报错，则需要请求时配置 NO_GLOBAL_MSG
-      if (!response.config.NO_GLOBAL_MSG) {
-        alert(res.errorMsg || res.errorCode);
+      if (!response?.config?.NO_GLOBAL_MSG) {
+        alert(res?.errorMsg || res?.errorCode || '服务正忙，请稍后再试！');
       }
       return Promise.reject(res);
     }
   },
   error => {
     // Spin.hide();
-    const err = error?.response;
+    const err = error?.response || {};
     // err = { data, status, statusText, headers, config, baseURL }
-    if (err) {
-      const statusMap = {
-        400: '400 Bad Request',
-        401: 'login Timeout',
-        404: '404 Not Found',
-        405: '405 Method Not Allowed',
-        500: '500 网络请求无响应！',
-        502: '502 Bad Gateway',
-        504: '504 Gateway Timeout'
-      };
-      const msg = err?.data || statusMap[err.status] || '网络请求异常！';
-      if (!err?.config?.NO_GLOBAL_MSG) {
-        alert(msg);
-      }
+    const statusMap = {
+      400: '400 Bad Request',
+      401: 'login Timeout',
+      404: '404 Not Found',
+      405: '405 Method Not Allowed',
+      500: '500 网络请求无响应！',
+      502: '502 Bad Gateway',
+      504: '504 Gateway Timeout'
+    };
+    const msg =
+      err.data || statusMap[err.status] || '网络请求异常，请稍后重试！';
+    if (!err.config?.NO_GLOBAL_MSG) {
+      alert(msg);
     }
     // 抛出错误，使其在业务代码 catch 中能捕获处理到
     return Promise.reject(error);
