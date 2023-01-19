@@ -3,29 +3,30 @@
     起始日期：
     <el-date-picker
       v-model="startTime"
-      :format="format"
       align="right"
       type="date"
       placeholder="选择日期"
+      :clearable="true"
+      :format="format"
       :picker-options="startOptions"
-      :clearable="false"
+      @change="startChange"
     ></el-date-picker>
     结束日期：
     <el-date-picker
       v-model="endTime"
-      :format="format"
       align="right"
       type="date"
       placeholder="选择日期"
+      :clearable="true"
+      :format="format"
       :picker-options="endOptions"
-      :clearable="false"
+      @change="endChange"
     ></el-date-picker>
     <el-button @click="search">查询</el-button>
   </div>
 </template>
 <script>
 export default {
-  // TODO 查询限制选择时间范围 1 年
   name: 'DatePicker',
   props: {
     start: { type: Date },
@@ -58,6 +59,12 @@ export default {
           return time.getTime() > this.now || time.getTime() < start;
         }
       };
+    },
+    isOverOneYear() {
+      const diffDays = (date, otherDate) =>
+        Math.ceil(Math.abs(date - otherDate) / (1000 * 60 * 60 * 24));
+      const { startTime, endTime } = this;
+      return startTime && endTime && diffDays(startTime, endTime) > 365;
     }
   },
   created() {
@@ -74,8 +81,29 @@ export default {
         this.startTime = now - 3600 * 1000 * 24 * 30;
       }
     },
+    startChange() {
+      if (this.isOverOneYear) {
+        this.$message({
+          message: '时间范围超过1年了，请重新选择结束日期！',
+          type: 'warning'
+        });
+        this.endTime = '';
+      }
+    },
+    endChange() {
+      if (this.isOverOneYear) {
+        this.$message({
+          message: '时间范围超过1年了，请重新选择起始日期！',
+          type: 'warning'
+        });
+        this.startTime = '';
+      }
+    },
     search() {
       const { startTime, endTime } = this;
+      if (!startTime || !endTime) {
+        this.init();
+      }
       this.$emit('input', { startTime, endTime });
       this.$emit('search', { startTime, endTime });
     }

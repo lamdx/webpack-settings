@@ -37,6 +37,7 @@ server.on('request', (request, res) => {
   const url = request.url;
   const response = { errorCode: '0000' };
   if (url === '/api/list') {
+    response.total = 100;
     response.list = [
       {
         date: '2016-05-02',

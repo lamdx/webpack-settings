@@ -2,13 +2,13 @@
   <div class="demo">
     <DatePicker></DatePicker>
     <DatePicker :start="start" :end="end"></DatePicker>
-    <!-- <MyTable
-      :requestMethod="$api.getList"
-      :searchParams="searchParams"
+    <MyTable
       :tableData="tableData"
       :tableColumns="tableColumns"
-      stripe
+      :requestMethod="$api.getList"
+      :searchParams="searchParams"
       border
+      stripe
       highlight-current-row
       @request-success="requestSuccess"
       @selection-change="changeSelection"
@@ -41,12 +41,12 @@
       </template>
     </MyTable>
     <SlotTable
-      :requestMethod="$api.getList"
-      :searchParams="searchParams"
       :tableData="tableData"
       :tableColumns="tableColumns"
-      stripe
+      :requestMethod="$api.getList"
+      :searchParams="searchParams"
       border
+      stripe
       highlight-current-row
       @request-success="requestSuccess"
       @selection-change="changeSelection"
@@ -77,7 +77,7 @@
           移除
         </el-button>
       </template>
-    </SlotTable> -->
+    </SlotTable>
   </div>
 </template>
 
@@ -150,7 +150,7 @@ export default {
       console.log('selection ===', selection);
     },
     requestSuccess(list) {
-      this.tableData = list;
+      this.tableData = [...list, ...list];
     }
   }
 };

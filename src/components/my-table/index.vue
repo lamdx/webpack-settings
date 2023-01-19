@@ -61,7 +61,11 @@ import { deepCopy } from '@/utils/index';
 import { getItem, setItem } from '@/utils/storage.js';
 export default {
   name: 'MyTable',
+  // v-model默认转换是：value 和 @input，如果想要修改这个行为，可以通过定义 model 选项
+  // v-model 中的 prop 就是把 value 用作 prop，input 用作 event，对于子组件来说，允许自定义使用 v-model 时定制 prop 和 event
+  model: { prop: 'tableData', event: 'request-success' },
   props: {
+    showPagination: { type: Boolean },
     autoRequest: {
       type: Boolean,
       default: true // 默认为 true，如果条件 searchParams 是异步的可以将 autoRequest 设置为 false，父组件通过 $refs 调用 init 方法
@@ -76,7 +80,7 @@ export default {
       refresh: true,
       isLoading: false,
       params: {},
-      total: 100,
+      total: 0,
       dictList: [
         { key: 'hobby', queryMethod: this.$api.getOptions },
         { key: 'hobby1', queryMethod: this.$api.getOptions }
@@ -181,6 +185,7 @@ export default {
           .then(res => {
             console.log('getList res ===', res);
             const list = res?.list || [];
+            this.total = res?.total || 0;
             this.$emit('request-success', list);
           })
           .catch(err => {
