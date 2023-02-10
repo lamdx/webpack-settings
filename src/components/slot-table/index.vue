@@ -37,6 +37,9 @@
           <slot :name="'header-' + item.header" :row="scope.row"></slot>
         </template>
       </el-table-column>
+      <template slot="empty">
+        <slot name="empty"></slot>
+      </template>
     </el-table>
     <div v-show="total > 0">
       <el-pagination

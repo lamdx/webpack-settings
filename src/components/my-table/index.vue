@@ -41,6 +41,10 @@
           <render-dom :render="() => item.render(scope.row)"></render-dom>
         </template> -->
       </el-table-column>
+      <!-- 空数据时显示的内容 -->
+      <template slot="empty">
+        <slot name="empty"></slot>
+      </template>
     </el-table>
     <div v-show="total > 0">
       <el-pagination

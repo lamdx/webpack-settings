@@ -39,6 +39,7 @@
           移除
         </el-button>
       </template>
+      <template slot="empty">暂无数据！</template>
     </MyTable>
     <SlotTable
       :tableData="tableData"
