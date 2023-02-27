@@ -4,6 +4,9 @@
 // Math.pow(2, 53);
 // 9007199254740992;
 
+// 快速导出引入的变量
+export * from './storage';
+
 export function currency(value, currency = '¥', decimals = 2) {
   const digitsRE = /(\d{3})(?=\d)/g;
   value = parseFloat(value);

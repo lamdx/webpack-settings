@@ -61,8 +61,8 @@
   </div>
 </template>
 <script>
-import { deepCopy } from '@/utils/index';
-import { getItem, setItem } from '@/utils/storage.js';
+import { deepCopy } from '@/utils';
+import { getItem, setItem } from '@/utils';
 export default {
   name: 'MyTable',
   // v-model默认转换是：value 和 @input，如果想要修改这个行为，可以通过定义 model 选项

@@ -32,6 +32,7 @@ export default new Router({
       // props: { a: 1, b: 2 },
       // 函数，可以将路由 params 参数、query 参数，通过 props 传递给路由组件
       props: $route => ({ keyword: $route.params.keyword, k: $route.query.k })
+      // 传递的参数只有在页面级别的组件中的 props 才能获取到
     },
     ...modules
   ],

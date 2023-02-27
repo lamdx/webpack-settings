@@ -37,4 +37,28 @@ li {
 a {
   text-decoration: none;
 }
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+/* 滚动条轨道 内阴影+圆角 */
+::-webkit-scrollbar-track {
+  background-color: #000;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+/* 滑块内阴影+圆角 */
+::-webkit-scrollbar-thumb {
+  background-color: #666;
+  border-radius: 8px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+/* 滚动条边角 */
+::-webkit-scrollbar-corner {
+  background-color: #000;
+}
 </style>

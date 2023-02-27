@@ -1,5 +1,6 @@
 <template>
   <div class="demo">
+    <el-button :disabled="!selection.length" @click="toOrder">去下单</el-button>
     <DatePicker></DatePicker>
     <DatePicker :start="start" :end="end"></DatePicker>
     <MyTable
@@ -17,8 +18,27 @@
         <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
       </template>
       <template v-slot:name="{ row }">
-        <p>{{ row.name }}</p>
-        <p>{{ row.address }}</p>
+        <div class="flex-center">
+          <el-form
+            :ref="row.id"
+            :model="row"
+            :class="{ 'el-form-item-16': row.error }"
+          >
+            <el-form-item
+              prop="number"
+              :rules="[
+                {
+                  validator: (rule, value, callback) =>
+                    getRule(rule, value, callback, row),
+                  trigger: ['change', 'blur']
+                }
+              ]"
+            >
+              <el-input v-model="row.number" :maxlength="13"></el-input>
+            </el-form-item>
+          </el-form>
+          <div :class="{ 'mb-16': row.error }">张</div>
+        </div>
       </template>
       <template v-slot:expand="{ row }">
         <el-form label-position="left" class="demo-table-expand">
@@ -129,29 +149,85 @@ export default {
           prop: 'address',
           width: 200, // 对应列的宽度
           isTooltip: true // 当内容过长被隐藏时显示 tooltip
-        },
-        {
-          label: '操作',
-          fixed: 'right', // 列是否固定在左侧或者右侧，true 表示固定在左侧 'left' 'right' true
-          slot: 'action'
         }
+        // fix: 这个 fixed 会影响表单校验的 clearValidate resetFields
+        // {
+        //   label: '操作',
+        //   fixed: 'right', // 列是否固定在左侧或者右侧，true 表示固定在左侧 'left' 'right' true
+        //   slot: 'action'
+        // }
       ],
       searchParams: {
         other: 1,
         pageNumber: 1,
         pageSize: 20
-      }
+      },
+      selection: []
     };
   },
   methods: {
+    getRule(rule, value, callback, row) {
+      value = value + '';
+      value = value.replace(/[^\d]+/g, '');
+      this.$set(row, 'number', value);
+      let tips = '';
+      if (!value) {
+        this.$set(row, 'error', true);
+        tips = '数量不能为空';
+        return callback(new Error(tips));
+      }
+      if (row.number % 10) {
+        this.$set(row, 'error', true);
+        tips = '数量应该为10的倍数';
+        return callback(new Error(tips));
+      }
+      this.$set(row, 'error', false);
+      callback();
+    },
     deleteRow(row) {
       console.log('row ===', row);
     },
     changeSelection(selection) {
-      console.log('selection ===', selection);
+      // console.log('selection ===', selection);
+      this.selection = selection;
+      // 清除未选中的数据的校验
+      this.tableData.forEach(item => {
+        this.$set(item, 'error', false);
+        this.$refs[item.id].clearValidate();
+      });
+      this.validateQuantity();
+    },
+    // 校验选中的数据
+    validateQuantity() {
+      this.selection.forEach(item => {
+        this.$refs[item.id].validate(valid => (item.isValidated = valid));
+      });
+    },
+    toOrder() {
+      // 重置未选中的数据，及其校验
+      const filterList = this.tableData.filter(
+        item => !this.selection.some(sel => item.id === sel.id)
+      );
+      console.log('filterList ===', filterList);
+      filterList.forEach(item => {
+        this.$refs[item.id].resetFields();
+      });
+      this.validateQuantity();
+      // 判断选中的数据是否全部通过
+      const isAllValidated = this.selection.every(item => item.isValidated);
+      if (!isAllValidated) {
+        const dom = document.querySelector('.el-form-item__error');
+        dom &&
+          dom.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'center'
+          });
+        return;
+      }
     },
     requestSuccess(list) {
-      this.tableData = [...list, ...list];
+      this.tableData = [...list];
     }
   }
 };
@@ -160,8 +236,7 @@ export default {
 .demo {
   padding: 32px;
 }
-</style>
-<style>
+
 .demo-table-expand {
   font-size: 0;
 }
@@ -173,5 +248,22 @@ export default {
   margin-right: 0;
   margin-bottom: 0;
   width: 50%;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.el-form-item {
+  margin-bottom: 0;
+}
+.mb-16 {
+  margin-bottom: 16px;
+}
+
+.el-form-item-16 {
+  @extend .mb-16;
 }
 </style>

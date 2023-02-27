@@ -76,7 +76,7 @@ module.exports = {
     // asyncArrow 用于异步箭头函数表达式 例如 async () => {}
     'space-before-function-paren': [
       'error',
-      { anonymous: 'never', named: 'never', asyncArrow: 'always' }
+      { anonymous: 'ignore', named: 'never', asyncArrow: 'always' }
     ],
     'brace-style': ['error', '1tbs'], // 大括号样式
     // 禁止或强制计算属性内的空格 obj[a]; // computed property in object member expression
