@@ -31,7 +31,15 @@ module.exports = {
   // 入口
   entry: './src/index.js', // 相对路径
   // 输出 开发模式没有输出，即 devServer 下可以不配置输出
-  output: {},
+  output: {
+    // 所有文件的输出路径
+    // __dirname nodejs 的变量，代表当前文件的文件夹目录
+    path: path.resolve(__dirname, '../dist'), // 绝对路径
+    // 入口文件打包输出文件名
+    filename: 'static/js/[name].[chunkhash:8].js', // 入口文件打包后的输出文件名
+    chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js', // 非入口文件，代码分割(超过设置的大小) 或者 文件懒加载 的文件名
+    clean: true // 输出前先清空输出目录
+  },
   // 加载器
   module: {
     rules: [

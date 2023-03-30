@@ -40,7 +40,7 @@ function getStyleLoader(pre) {
   ].filter(Boolean);
 }
 
-module.exports = {
+const config = {
   // 入口
   entry: './src/index.js', // 相对路径
   // 多入口
@@ -225,8 +225,7 @@ module.exports = {
           }
         }
       ]
-    }),
-    new BundleAnalyzerPlugin()
+    })
   ],
   optimization: {
     minimize: true,
@@ -352,3 +351,16 @@ module.exports = {
   mode: 'production',
   devtool: 'source-map'
 };
+
+if (process.env.REPORT) {
+  // [webpack-bundle-analyzer - npm](https://www.npmjs.com/package/webpack-bundle-analyzer)
+  config.plugins.push(
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      reportFilename: path.resolve(__dirname, '../logs/analyzer.html'),
+      openAnalyzer: true
+    })
+  );
+}
+
+module.exports = config;

@@ -6,7 +6,9 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "webpack serve --config ./build/webpack.dev.js",
+    "test": "webpack --config ./build/webpack.dev.js",
     "build": "webpack --config ./build/webpack.prod.js",
+    "build:report": "cross-env REPORT=true webpack --config ./build/webpack.prod.js",
     "env:dev": "cross-env NODE_ENV=development webpack serve --config ./build/webpack.config.js",
     "env:build": "cross-env NODE_ENV=production webpack --config ./build/webpack.config.js",
     "eslint": "eslint --ext .js,.vue src --fix"
