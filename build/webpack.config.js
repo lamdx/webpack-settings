@@ -12,8 +12,14 @@ const { DefinePlugin } = require('webpack');
 // vue-loader 允许你以一种名为单文件组件(SFC)的格式撰写 VueTemplate 组件，vue-loader 版本有问题跟 vue2 和 vue3 有关系
 const { VueLoaderPlugin } = require('vue-loader');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+// 构建 bundle 依赖分析插件
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// 构建耗时分析插件
+const SpeedMeasureWebpackPlugin = require('speed-measure-webpack-plugin');
+// 构建执行进度
+const WebpackBar = require('webpackbar');
 
 const threads = os.cpus().length; // cpu 核数，多进程
 // cross-env 定义的环境变量给 webpack 打包工具使用
@@ -227,7 +233,9 @@ module.exports = {
           }
         ]
       }),
-    isProduction && new BundleAnalyzerPlugin()
+    isProduction && new BundleAnalyzerPlugin(),
+    new SpeedMeasureWebpackPlugin(),
+    new WebpackBar()
   ].filter(Boolean),
   optimization: {
     minimize: isProduction,

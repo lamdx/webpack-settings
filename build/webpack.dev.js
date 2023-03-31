@@ -8,6 +8,10 @@ const { VueLoaderPlugin } = require('vue-loader');
 
 const threads = os.cpus().length; // cpu 核数，多进程
 const proxy = require('./proxy');
+// 构建耗时分析插件
+const SpeedMeasureWebpackPlugin = require('speed-measure-webpack-plugin');
+// 构建执行进度
+const WebpackBar = require('webpackbar');
 
 // 返回处理样式 loader 函数
 const getStyleLoaders = pre => {
@@ -173,7 +177,9 @@ module.exports = {
       'process.env': {
         NODE_ENV: '"development"'
       }
-    })
+    }),
+    new SpeedMeasureWebpackPlugin(),
+    new WebpackBar()
   ],
   optimization: {
     // 开发模式下不需要压缩
