@@ -29,6 +29,12 @@ const threads = os.cpus().length; // cpu 核数，多进程
 // 用来获取处理样式的 loader
 function getStyleLoader(pre) {
   return [
+    // {
+    //   loader: MiniCssExtractPlugin.loader, // 提取 css 成单独文件
+    //   options: {
+    //     publicPath: 'http://www.cms.com'
+    //   }
+    // },
     MiniCssExtractPlugin.loader, // 提取 css 成单独文件
     'css-loader', // 将 css 资源编译成 commonjs 的模块到 js 中
     {
@@ -64,6 +70,7 @@ const config = {
     filename: 'static/js/[name].[chunkhash:8].js', // 入口文件打包后的输出文件名
     chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js', // 非入口文件，代码分割(超过设置的大小) 或者 文件懒加载 的文件名
     clean: true // 输出前先清空输出目录
+    // publicPath: 'https://www.baidu.com'
   },
   // 加载器
   module: {

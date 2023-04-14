@@ -1,4 +1,5 @@
 const os = require('os');
+const chalk = require('chalk');
 const path = require('path'); // nodejs 核心模块，专门用来处理路径问题
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
@@ -13,13 +14,14 @@ const { DefinePlugin } = require('webpack');
 const { VueLoaderPlugin } = require('vue-loader');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-// 构建 bundle 依赖分析插件
+// 构建 bundle 依赖分析插件 可视化 webpack 输出文件的大小 打包体积分析
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 // 构建耗时分析插件
 const SpeedMeasureWebpackPlugin = require('speed-measure-webpack-plugin');
 // 构建执行进度
 const WebpackBar = require('webpackbar');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 const threads = os.cpus().length; // cpu 核数，多进程
 // cross-env 定义的环境变量给 webpack 打包工具使用
@@ -235,7 +237,10 @@ module.exports = {
       }),
     isProduction && new BundleAnalyzerPlugin(),
     new SpeedMeasureWebpackPlugin(),
-    new WebpackBar()
+    // new WebpackBar(),
+    new ProgressBarPlugin({
+      format: `:msg [:bar] ${chalk.green.bold(':percent')} (:elapsed s)`
+    })
   ].filter(Boolean),
   optimization: {
     minimize: isProduction,
