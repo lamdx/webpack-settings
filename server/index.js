@@ -92,12 +92,25 @@ server.on('request', (request, res) => {
   // req.url 获取到的是端口号之后的那一部分路径，也就是说所有的 url 都是以 / 开头的
   // 2. 根据路径处理响应
   const url = request.url;
-  const response = responseMap[url] || {
-    message: '404 Not Found.'
-  };
-  response.errorCode = '0000';
+  let response = responseMap[url];
+  let delay = 4000;
+  delay = 0;
+  if (response) {
+    response.errorCode = '0000';
+  } else {
+    response = {
+      message: '404 Not Found.',
+      error: '404 Not Found',
+      path: '*',
+      status: 404,
+      timestamp: new Date().toLocaleDateString()
+    };
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+  }
   // 响应内容只能是二进制数据或者字符串
-  res.end(JSON.stringify(response));
+  setTimeout(() => {
+    res.end(JSON.stringify(response));
+  }, delay);
 });
 
 // 4. 绑定端口号，启动服务器
