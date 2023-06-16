@@ -61,4 +61,13 @@ a {
 ::-webkit-scrollbar-corner {
   background-color: #000;
 }
+/* :root {
+  --black: #000;
+  --white: #fff;
+}
+body {
+  background: var(--black);
+  color: var(--white);
+  filter: invert(1) hue-rotate(180deg);
+} */
 </style>

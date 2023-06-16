@@ -5,12 +5,6 @@ import App from './App';
 import router from './router';
 import store from './store';
 
-import './assets/css/iconfont.css';
-import './assets/css/index.css';
-import './assets/less/index.less';
-import './assets/sass/index.sass';
-import './assets/sass/index.scss';
-import './assets/stylus/index.styl';
 // 项目样式
 import './assets/style/style.scss';
 

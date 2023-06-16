@@ -1,0 +1,138 @@
+// flex
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-space-around {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+// full size
+.full-h {
+  height: 100%;
+}
+
+.full-w {
+  width: 100%;
+}
+
+.full {
+  @extend .full-w;
+  @extend .full-h;
+  box-sizing: border-box;
+}
+
+// 宽度 .col-1 -> 100% .col-5 -> 20%
+@for $i from 1 through 5 {
+  .col-#{$i} {
+    width: 100% / $i;
+  }
+}
+
+@each $size in (4, 8, 12, 16, 20) {
+  .pd-#{$size} {
+    padding: 1px * $size;
+  }
+  .pd-l-#{$size} {
+    padding-left: 1px * $size;
+  }
+  .pd-r-#{$size} {
+    padding-right: 1px * $size;
+  }
+  .pd-t-#{$size} {
+    padding-top: 1px * $size;
+  }
+  .pd-b-#{$size} {
+    padding-bottom: 1px * $size;
+  }
+}
+
+.overflow {
+  overflow-y: auto;
+}
+
+// txt
+.txt-left {
+  text-align: left;
+}
+.txt-right {
+  text-align: right;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+$color-primary: #e93a40;
+$color-cursor: #418edf;
+$color-minor: #bc935c;
+$color-bg: #fafafa;
+$color-shadow: rgba(237, 237, 237, 0.6);
+$color-border: #eeeeee;
+$color-link: #c69546;
+$color-blue: #5e86d5;
+$color-white: #fff;
+$color-gray: #f8f8f8;
+$color-up: #e93a40;
+$color-down: #18a85b;
+$color-golden: #f8f4ee;
+$color-gradient-golden: linear-gradient(255deg, #f8f1e8 7%, #fbf5ee 35%, #fffcf9 88%);
+$color-bg-index-up: linear-gradient(360deg, $color-white, $color-primary);
+$color-bg-index-down: linear-gradient(360deg, $color-white, $color-down);
+$color-bg-default: $color-white;
+$color-txt-default: #383838;
+$color-txt-info: #565656;
+$color-txt-minor: #999;
+$color-txt-disabled: #ccc;
+
+.bg-primary {
+  background: $color-primary !important;
+}
+.bg-cursor {
+  background: $color-cursor !important;
+}
+.bg-bg {
+  background: $color-bg !important;
+}
+.bg-link {
+  background: $color-link !important;
+}
+.bg-blue {
+  background: $color-blue !important;
+}
+.bg-gray {
+  background: $color-gray !important;
+}
+.bg-up {
+  background: $color-up !important;
+}
+.bg-down {
+  background: $color-down !important;
+}
+.bg-golden {
+  background: $color-golden !important;
+}
+.bg-gradient-golden {
+  background: $color-gradient-golden !important;
+}
+.bg-default {
+  background: $color-bg-default !important;
+}

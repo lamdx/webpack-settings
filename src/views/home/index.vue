@@ -1,6 +1,5 @@
 <template>
-  <div class="home">
-    <h1>homePage</h1>
+  <div class="pd-20">
     <!-- <img :src="getImage('logo')" alt="" /> -->
     <br />
     <input type="button" value="减" @click="minus" />
@@ -14,7 +13,7 @@
       :requestMethod="$api.getOptions"
     >
       <template v-slot:option="{ item }">
-        <div class="opt">
+        <div class="flex-space-between">
           <span>{{ item.label }}</span>
           <span>{{ item.value }}</span>
         </div>
@@ -22,6 +21,8 @@
     </MySelect>
     <MySelect :options="options" multiple collapse-tags></MySelect>
     <!-- <TimeAxis></TimeAxis> -->
+    <!-- <MyLineChart></MyLineChart> -->
+    <!-- <ListHeader></ListHeader> -->
   </div>
 </template>
 
@@ -85,13 +86,4 @@ export default {
   }
 };
 </script>
-<style scoped lang="scss">
-.home {
-  height: 100%;
-  padding: 32px;
-}
-.opt {
-  display: flex;
-  justify-content: space-between;
-}
-</style>
+<style scoped lang="scss"></style>
