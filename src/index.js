@@ -11,6 +11,8 @@ import './assets/less/index.less';
 import './assets/sass/index.sass';
 import './assets/sass/index.scss';
 import './assets/stylus/index.styl';
+// 项目样式
+import './assets/style/style.scss';
 
 // 统一管理请求 api
 import * as API from '@/api';
@@ -23,6 +25,10 @@ import './filters';
 
 // 按需引入 element-ui
 import '@/element-ui';
+
+// 自定义指令
+import resizeFont from '@/directives/resize-font';
+Vue.directive('resizeFont', resizeFont);
 
 // 关闭 Vue 在启动时生成生产提示
 Vue.config.productionTip = false;
