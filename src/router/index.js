@@ -19,6 +19,12 @@ export default new Router({
       component: home
     },
     {
+      path: '/custom-demo',
+      name: 'custom-demo',
+      component: () =>
+        import(/* webpackChunkName: "custom-demo" */ '@/views/custom-demo')
+    },
+    {
       path: '/demo',
       name: 'demo',
       component: () => import(/* webpackChunkName: "demo" */ '@/views/demo'),

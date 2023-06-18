@@ -12,6 +12,7 @@ import './assets/style/style.scss';
 import * as API from '@/api';
 // 自动化注册全局组件
 import './components';
+import './custom-components';
 // 动态引入图片
 import '@/assets/images';
 // filter 过滤器
@@ -21,10 +22,6 @@ import './directives';
 
 // 按需引入 element-ui
 import '@/element-ui';
-
-// 自定义指令
-// import resizeFont from '@/directives/resize-font';
-// Vue.directive('resizeFont', resizeFont);
 
 // 关闭 Vue 在启动时生成生产提示
 Vue.config.productionTip = false;
@@ -53,5 +50,12 @@ const vm = new Vue({
   store,
   render: h => h(App)
 });
+
+// mock 数据执行方法只在指定的演示环境触发
+// if (location.origin === process.env.MOCK_ENV || process.env.IS_DEMO_ENV) {
+// import(/* webpackChunkName:"mock-data" */ '@/mock/index.js').then(res => {
+//   res.mockFilter();
+// });
+// }
 
 vm.$mount('#app');

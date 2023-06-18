@@ -61,8 +61,10 @@
     "axios": "^1.2.2",
     "echarts": "^5.3.3",
     "element-ui": "^2.15.12",
+    "mockjs": "^1.1.0",
     "vue": "2.6.11",
     "vue-router": "^3.6.5",
+    "vue-smooth-picker": "^0.4.2",
     "vuex": "^3.6.2"
   },
   "browserslist": {

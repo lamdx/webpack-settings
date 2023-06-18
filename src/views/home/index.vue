@@ -1,29 +1,13 @@
 <template>
-  <div class="pd-20">
+  <div class="pd-32">
     <!-- <img :src="getImage('logo')" alt="" /> -->
     <br />
-    <router-link to="/demo">to demo</router-link>
+    <router-link to="/demo">demo</router-link>
+    <router-link to="/custom-demo">custom-demo</router-link>
     <input type="button" value="减" @click="minus" />
     <input id="num" v-model="num" type="text" />
     {{ num }}
     <input type="button" value="加" @click="add" />
-    <MySelect
-      v-model="svalue"
-      placeholder="请选择"
-      clearable
-      :requestMethod="$api.getOptions"
-    >
-      <template v-slot:option="{ item }">
-        <div class="flex-space-between">
-          <span>{{ item.label }}</span>
-          <span>{{ item.value }}</span>
-        </div>
-      </template>
-    </MySelect>
-    <MySelect :options="options" multiple collapse-tags></MySelect>
-    <!-- <TimeAxis></TimeAxis> -->
-    <!-- <MyLineChart></MyLineChart> -->
-    <!-- <ListHeader></ListHeader> -->
   </div>
 </template>
 
@@ -31,43 +15,49 @@
 import { mapState, mapMutations } from 'vuex';
 export default {
   name: 'Home',
+  beforeRouteEnter(to, from, next) {
+    console.log('beforeRouteEnter ===');
+    console.log('to ===', to);
+    console.log('from ===', from);
+    next();
+  },
+  beforeRouteLeave(to, from, next) {
+    console.log('beforeRouteLeave ===');
+    console.log('to ===', to);
+    console.log('from ===', from);
+    next();
+  },
   data() {
-    return {
-      options: [
-        {
-          value: '选项1',
-          label: '黄金糕'
-        },
-        {
-          value: '选项2',
-          label: '双皮奶'
-        },
-        {
-          value: '选项3',
-          label: '蚵仔煎'
-        },
-        {
-          value: '选项4',
-          label: '龙须面'
-        },
-        {
-          value: '选项5',
-          label: '北京烤鸭'
-        }
-      ],
-      svalue: ''
-    };
+    return {};
   },
   computed: {
     ...mapState('app', ['num'])
   },
+  watch: {
+    $route: {
+      handler() {
+        console.log('route 123 ===', 123);
+      }
+      // immediate: true
+    }
+  },
   created() {
+    console.log('created ===');
     // 添加 promise 代码
     const promise = Promise.resolve();
     promise.then(() => {
       console.log('hello promise');
     });
     console.log('process.env ===', process.env);
+  },
+  mounted() {
+    console.log('mounted ===');
+  },
+  activated() {
+    console.log('activated ===');
+  },
+  deactivated() {
+    console.log('deactivated ===');
   },
   methods: {
     ...mapMutations('app', ['setNum']),
