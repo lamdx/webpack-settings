@@ -2,6 +2,7 @@
   <div class="pd-20">
     <!-- <img :src="getImage('logo')" alt="" /> -->
     <br />
+    <router-link to="/demo">to demo</router-link>
     <input type="button" value="减" @click="minus" />
     <input id="num" v-model="num" type="text" />
     {{ num }}

@@ -47,9 +47,17 @@
   }
 }
 
-@each $size in (4, 8, 12, 16, 20) {
+@each $size in (4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 80) {
   .pd-#{$size} {
     padding: 1px * $size;
+  }
+  .pd-v-#{$size} {
+    padding-left: 1px * $size;
+    padding-right: 1px * $size;
+  }
+  .pd-h-#{$size} {
+    padding-top: 1px * $size;
+    padding-bottom: 1px * $size;
   }
   .pd-l-#{$size} {
     padding-left: 1px * $size;

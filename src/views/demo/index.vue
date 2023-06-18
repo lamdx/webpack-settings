@@ -105,6 +105,18 @@
 <script>
 export default {
   name: 'Demo',
+  beforeRouteEnter(to, from, next) {
+    console.log('beforeRouteEnter ===');
+    console.log('to ===', to);
+    console.log('from ===', from);
+    next();
+  },
+  beforeRouteLeave(to, from, next) {
+    console.log('beforeRouteLeave ===');
+    console.log('to ===', to);
+    console.log('from ===', from);
+    next();
+  },
   data() {
     return {
       start: new Date('2023-01-01'),
@@ -164,6 +176,26 @@ export default {
       },
       selection: []
     };
+  },
+  watch: {
+    $route: {
+      handler() {
+        console.log('route 123 ===', 123);
+      }
+      // immediate: true
+    }
+  },
+  created() {
+    console.log('created ===');
+  },
+  mounted() {
+    console.log('mounted ===');
+  },
+  activated() {
+    console.log('activated ===');
+  },
+  deactivated() {
+    console.log('deactivated ===');
   },
   methods: {
     getRule(rule, value, callback, row) {

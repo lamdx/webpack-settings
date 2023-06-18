@@ -22,7 +22,7 @@ export default new Router({
       path: '/demo',
       name: 'demo',
       component: () => import(/* webpackChunkName: "demo" */ '@/views/demo'),
-
+      meta: { keepAlive: true },
       // 路由组件可以通过 props 接收路由跳转传递的参数(params 和 query 是可以同时存在的)
       // 如果路由传参携带了 params 参数，跳转的时候只能使用 name 跳转，不能使用 path
 

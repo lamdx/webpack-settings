@@ -1,4 +1,4 @@
-function _getStorageType(type) {
+function getStorageType(type) {
   switch (type) {
     case 'local':
       return localStorage;
@@ -9,12 +9,20 @@ function _getStorageType(type) {
   }
 }
 
-function _getItem(key, type = 'session') {
+// 获取原始数据
+export function getRawItem(key, type = 'session') {
+  if (!key) return;
+  const raw = getStorageType(type).getItem(key);
+  return raw || '';
+}
+
+// 获取数据
+export function getItem(key, type = 'session') {
   if (!key || typeof key !== 'string') {
     console.error(`参数${key}错误`);
     return;
   }
-  let data = _getStorageType(type).getItem(key);
+  const data = getStorageType(type).getItem(key);
   try {
     if (data !== '' && data !== undefined) {
       return JSON.parse(data);
@@ -27,7 +35,8 @@ function _getItem(key, type = 'session') {
   }
 }
 
-function _setItem(key, value, type = 'session') {
+// 保存数据
+export function setItem(key, value, type = 'session') {
   // key 必须为字符串
   if (!key || typeof key !== 'string') {
     console.error(`参数${key}错误`);
@@ -42,27 +51,10 @@ function _setItem(key, value, type = 'session') {
   } else {
     data = value;
   }
-  _getStorageType(type).setItem(key, data);
-}
-
-// 获取原始数据
-export function getRawItem(key, type = 'session') {
-  if (!key) return;
-  let raw = _getStorageType(type).getItem(key);
-  return raw || '';
-}
-
-// 获取数据
-export function getItem(key, type = 'session') {
-  return _getItem(key, type);
-}
-
-// 保存数据
-export function setItem(key, value, type = 'session') {
-  _setItem(key, value, type);
+  getStorageType(type).setItem(key, data);
 }
 
 // 删除数据
 export function removeItem(key, type = 'session') {
-  _getStorageType(type).removeItem(key);
+  getStorageType(type).removeItem(key);
 }
