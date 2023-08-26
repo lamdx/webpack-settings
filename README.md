@@ -261,13 +261,33 @@ module.exports = {
 3. 减少代码体积
 
 - 使用 `Tree Shaking` 剔除了没有使用的多余代码，让代码体积更小
+  在 package.json 中配置
+  `"sideEffects": false` 所有代码都没有副作用(都可以进行 tree shaking)
+  问题：可能会把 css、@babel/polyfill (副作用)文件干掉
+  `"sideEffects": ["*.css", "*.less"]`
 - 使用 `@babel/plugin-transform-runtime` 插件对 babel 进行处理，让辅助代码从中引入，而不是每个文件都生成辅助代码，从而体积更小
 - 使用 `Image Minimizer` 对项目中图片进行压缩，体积更小，请求速度更快(需要注意的是，如果项目中图片都是在线链接，那么就不需要了，本地项目静态图片才需要进行压缩)
 
 4. 优化代码运行性能
 
 - 使用 `Code Split` 对代码进行分割成多个 js 文件，从而使单个文件体积更小，并行加载 js 速度更快，并通过 import 动态导入语法进行按需加载，从而达到需要使用时才加载该资源，不用时不加载资源
+  页面组件拆分，优先加载首屏内容所需资源，组件按需加载
+  splitchunks 有效拆分公共依赖，提高缓存利用率
 - 使用 `Preload / Prefetch` 对代码进行提前加载，等未来需要使用时就能直接使用，从而用户体验更好
+  ```js
+  // import from { mul } from './test'
+  document.getElementById('btn').onclick = function () {
+    // lazy loading 懒加载：当文件需要使用时才加载
+    // 预加载 prefetch：会在使用之前，提前加载js文件
+    // 正常加载可以认为是并行加载(同一时间加载多个文件)
+    // 预加载 prefetch：等其他资源加载完毕，浏览器空闲了，再偷偷加载资源
+    // 通过 js 代码，让某个文件被单独打包成一个 chunk
+    // import 动态导入语法：能将某个文件单独打包
+    import(/* webpackChunkName: 'test', webpackPrefetch: true */ './test').then(({ mul }) => {
+      console.log(mul(4, 5));
+    });
+  };
+  ```
 - 使用 `Network Cache` 能对输出资源文件进行更好的命名，将来好做缓存，从而用户体验更好
 - 使用 `Core-js` 对 js 进行兼容性处理，让代码能运行在低版本浏览器
 - 使用 `PWA` 能让代码离线也能访问，从而提升用户体验
