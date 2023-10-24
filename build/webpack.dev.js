@@ -31,6 +31,8 @@ const getStyleLoaders = pre => {
   ].filter(Boolean);
 };
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
 module.exports = {
   // 入口
   entry: './src/index.js', // 相对路径

@@ -9,6 +9,11 @@
     <!-- <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"> -->
     <link rel="icon" href="icon_192x192.png">
     <title>webpack</title>
+    <% if (htmlWebpackPlugin.options.env === 'production') { %>
+      <% for (var i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.js) { %>
+      <script src="<%= htmlWebpackPlugin.options.cdn.basePath %><%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
+      <% } %>
+    <% } %>
   </head>
   <body>
     <div id="app"></div>

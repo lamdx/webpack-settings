@@ -5,7 +5,7 @@
   </div>
 </template>
 <script>
-// import echarts from 'echarts';
+// import echarts from 'echarts'; // 如果采用 cdn，echart 只能全量引入使用，因为 echart 按需引入后，externals 无法识别 echart，所以不会忽略打包，还是会把 echart 打包进去
 // 引入 echarts 核心模块，核心模块提供了 echarts 使用必须要的接口
 import * as echarts from 'echarts/core';
 

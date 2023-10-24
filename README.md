@@ -265,6 +265,7 @@ module.exports = {
   `"sideEffects": false` 所有代码都没有副作用(都可以进行 tree shaking)
   问题：可能会把 css、@babel/polyfill (副作用)文件干掉
   `"sideEffects": ["*.css", "*.less"]`
+  使用 purgecss-webpack-plugin 对 CSS Tree Shaking
 - 使用 `@babel/plugin-transform-runtime` 插件对 babel 进行处理，让辅助代码从中引入，而不是每个文件都生成辅助代码，从而体积更小
 - 使用 `Image Minimizer` 对项目中图片进行压缩，体积更小，请求速度更快(需要注意的是，如果项目中图片都是在线链接，那么就不需要了，本地项目静态图片才需要进行压缩)
 
@@ -291,6 +292,92 @@ module.exports = {
 - 使用 `Network Cache` 能对输出资源文件进行更好的命名，将来好做缓存，从而用户体验更好
 - 使用 `Core-js` 对 js 进行兼容性处理，让代码能运行在低版本浏览器
 - 使用 `PWA` 能让代码离线也能访问，从而提升用户体验
+
+## webpack 分包 externals & cdn
+
+- 主要是减少入口依赖文件包的体积，如果不进行拆包，那么根据 entry 的文件打包就很大，会影响首页加载的性能。
+  - 利用 entry 进行分包，多入口
+  - splitChunks
+  - externals 外部扩展 & cdn 优化静态资源
+    - 公司有 cdn，且静态资源有部署到 cdn
+    - 这样我们可以将⼀些 js 文件存储在 CDN 上(减少 webpack 打包出来的 js 体积)，在 index.html 中通过标签引入
+    - webpack 提供了一个外部扩展 externals，将输出的 bundle.js 排除第三方的依赖，不会对其进行打包
+    - 还需在 HtmlWebpackPlugin 中加入引入的 cdn 地址，即修改 index.html 模板，自动通过标签引入
+
+- plugins
+
+```js
+module.exports = {
+  plugins: [
+    new HtmlWebpackPlugin({
+      // 模板：以 public/index.html 文件创建新的 html 文件
+      // 新的 html 文件特点：1. 结构和原来一致 2. 自动引入打包输出的资源
+      template: path.resolve(__dirname, '../public/index.html'),
+      filename: 'index.html',
+      env: process.env.NODE_ENV, // 传入模版中的环境
+      inject: 'body',
+      cdn: {
+        // https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.js
+        // https://cdn.bootcdn.net/ajax/libs/vue-router/3.6.5/vue-router.js
+        // https://cdn.bootcdn.net/ajax/libs/vuex/3.6.2/vuex.js
+        // https://cdn.bootcdn.net/ajax/libs/axios/1.2.2/axios.js
+        // https://cdn.bootcdn.net/ajax/libs/echarts/5.3.3/echarts.js
+        basePath: 'https://cdn.bootcdn.net/ajax/libs',
+        js: ['/vue/2.6.9/vue.js', '/vue-router/3.6.5/vue-router.js', '/vuex/3.6.2/vuex.js', '/axios/1.2.2/axios.js', '/echarts/5.3.3/echarts.js']
+      }
+    })
+  ]
+};
+```
+
+- externals
+
+```js
+module.exports = {
+  externals: {
+    // jquery 通过 script 引入之后，全局中即有了 jQuery 变量
+    jquery: 'jQuery',
+    // 格式为："资源名":"外部引入名" （注意：外部引入名由模块自身决定，不可更改。）
+    // key 是我们 import 的包名，value 是 CDN 为我们提供的全局变量名
+    // 所以最后 webpack 会把一个静态资源编译成：module.export.react = window.React
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    redux: 'Redux',
+    'react-router-dom': 'ReactRouterDOM',
+    loadsh: '_',
+    vue: 'Vue',
+    vuex: 'Vuex',
+    'vue-router': 'VueRouter',
+    axios: 'axios',
+    echarts: 'echarts' // 如果采用 cdn，echart 只能全量引入使用，因为 echart 按需引入后，externals 无法识别 echart，所以不会忽略打包，还是会把 echart 打包进去
+  }
+};
+```
+
+- index.html
+  开发环境不需要引入 externals，仍然可以通过 import 的方式去引用(如 import $ from 'jquery')，模版 html 中可以根据环境判断是否需要插入 cdn
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- index.html 加上版本号 -->
+    <meta name="version" content="<%=new Date().toLocaleString()%>" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"> -->
+    <link rel="icon" href="icon_192x192.png" />
+    <title>webpack</title>
+    <% if (htmlWebpackPlugin.options.env === 'production') { %> <% for (var i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.js) { %>
+    <script src="<%= htmlWebpackPlugin.options.cdn.basePath %><%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
+    <% } %> <% } %>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
+```
 
 ## vue2
 

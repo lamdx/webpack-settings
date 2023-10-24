@@ -22,7 +22,7 @@ const SpeedMeasureWebpackPlugin = require('speed-measure-webpack-plugin');
 const WebpackBar = require('webpackbar');
 
 // 解决 vue 文件打包构建报错
-process.env.NODE_ENV = 'production';
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
 const threads = os.cpus().length; // cpu 核数，多进程
 

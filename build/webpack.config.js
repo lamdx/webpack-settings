@@ -64,7 +64,8 @@ module.exports = {
     // 入口文件打包输出文件名
     filename: 'static/js/[name].[chunkhash:8].js', // 入口文件打包后的输出文件名
     chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js', // 非入口文件，代码分割(超过设置的大小) 或者 文件懒加载 的文件名
-    clean: true // 输出前先清空输出目录
+    clean: true, // 输出前先清空输出目录
+    publicPath: ''
   },
   // 加载器
   module: {
@@ -189,7 +190,25 @@ module.exports = {
     new HtmlWebpackPlugin({
       // 模板：以 public/index.html 文件创建新的 html 文件
       // 新的 html 文件特点：1. 结构和原来一致 2. 自动引入打包输出的资源
-      template: path.resolve(__dirname, '../public/index.html')
+      template: path.resolve(__dirname, '../public/index.html'),
+      filename: 'index.html',
+      env: process.env.NODE_ENV, // 传入模版中的环境
+      inject: true,
+      cdn: {
+        // https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.js
+        // https://cdn.bootcdn.net/ajax/libs/vue-router/3.6.5/vue-router.js
+        // https://cdn.bootcdn.net/ajax/libs/vuex/3.6.2/vuex.js
+        // https://cdn.bootcdn.net/ajax/libs/axios/1.2.2/axios.js
+        // https://cdn.bootcdn.net/ajax/libs/echarts/5.3.3/echarts.js
+        basePath: 'https://cdn.bootcdn.net/ajax/libs',
+        js: [
+          '/vue/2.6.9/vue.js',
+          '/vue-router/3.6.5/vue-router.js',
+          '/vuex/3.6.2/vuex.js',
+          '/axios/1.2.2/axios.js',
+          '/echarts/5.3.3/echarts.js'
+        ]
+      }
     }),
     // 提取 css 成单独文件
     isProduction &&
@@ -373,5 +392,14 @@ module.exports = {
   // 模式
   mode: isProduction ? 'production' : 'development',
   devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
-  performance: false // ?
+  performance: false, // ?
+  externals: isProduction
+    ? {
+        vue: 'Vue',
+        vuex: 'Vuex',
+        'vue-router': 'VueRouter',
+        axios: 'axios',
+        echarts: 'echarts' // 如果采用 cdn，echart 只能全量引入使用，因为 echart 按需引入后，externals 无法识别 echart，所以不会忽略打包，还是会把 echart 打包进去
+      }
+    : {}
 };
