@@ -34,6 +34,7 @@
     <TextExpandAndCollapse :content="content" />
     <TextExpandedAndClosed :content="content" />
     <TimeAxis />
+    <LogList />
     <ViewAll :left="'文件查看'" :right="'查看全部'" @go="goback"></ViewAll>
     <ListHeader></ListHeader>
   </div>
