@@ -241,7 +241,10 @@ module.exports = {
     open: true, // 是否自动打开浏览器
     hot: true, // 默认开启了 HMR 功能(只能用于开发环境，生产环境不需要了)
     historyApiFallback: true, // 解决前端路由刷新 404 问题
+    allowedHosts: ['.helloworld.com', 'localhost'],
     proxy
+    // disableHostsCheck webpack 4 的属性
+    // disableHostsCheck: true
   },
   // 模式
   mode: 'development',

@@ -74,7 +74,7 @@ const responseMap = {
  */
 server.on('request', (request, res) => {
   // http://127.0.0.1:3000/foo/b /foo/b
-  console.log('收到客户端的请求了，请求路径是：' + request.url);
+  console.log('收到客户端的请求了，请求路径是：' + request.url, request.method);
   // response 对象有一个方法：write 可以用来给客户端发送响应数据
   // write 可以使用多次，但是最后一定要使用 end 来结束响应，否则客户端会一直等待
   // response.write('hello');
@@ -107,6 +107,38 @@ server.on('request', (request, res) => {
     };
     res.writeHead(404, { 'Content-Type': 'application/json' });
   }
+
+  // 简单粗暴
+  // res.setHeader('Access-Control-Allow-Origin', '*');
+  // res.setHeader('Access-Control-Allow-Headers', '*');
+  // res.setHeader('Access-Control-Allow-Methods', '*');
+  // res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+  // 设置多个 Access-Control-Allow-Origin 头来允许多个不同的域访问你的资源
+  // 错误的写法，注意不是以 , 逗号隔开
+  // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080,http://127.0.0.1:5500');
+  const allowedOrigins = ['http://localhost:8080', 'http://127.0.0.1:5500'];
+  const origin = request.headers.origin;
+  console.log('origin ===', origin);
+  // 检查请求的域是否在允许的列表中
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  // 响应首部 Access-Control-Allow-Headers 用于 preflight request（预检请求）中，列出了将会在正式请求的 Access-Control-Request-Headers 字段中出现的首部信息。
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin,Content-Type,Accept,token,X-Requested-With'
+  );
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+
+  if (request.method === 'OPTIONS') {
+    res.end('OPTIONS returns OK');
+    return;
+  }
+
   // 响应内容只能是二进制数据或者字符串
   setTimeout(() => {
     res.end(JSON.stringify(response));
