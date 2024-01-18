@@ -32,6 +32,9 @@ instance.interceptors.request.use(config => {
     if (config.data instanceof FormData) {
       // 业务代码的 menuCode 优先级高于公共配置的 menuCode
       config.data.append('menuCode', menuCode);
+    } else if (config.data instanceof ArrayBuffer) {
+      // 二进制数据流格式上传文件 不处理
+      config.data = Object.assign(config.data);
     } else {
       config.data = Object.assign({ menuCode }, config.data);
     }
@@ -89,8 +92,9 @@ instance.interceptors.response.use(
       502: '502 Bad Gateway',
       504: '504 Gateway Timeout'
     };
+    console.log('interceptors error ===', error);
     const msg =
-      response.data ||
+      response?.data?.message ||
       statusMap[response.status] ||
       '网络请求异常，请稍后重试！';
 

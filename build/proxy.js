@@ -21,5 +21,10 @@ module.exports = {
     headers: {
       Referer: `${proxyHost}/star-web`
     }
+  },
+  '/upload': {
+    target: proxyHost,
+    changeOrigin: true,
+    logLevel: 'debug'
   }
 };

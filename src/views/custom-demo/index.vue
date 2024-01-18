@@ -1,5 +1,7 @@
 <template>
   <div class="pd-56">
+    <Upload />
+    <br />
     <CampAnimation />
     <br />
     <CampBar />
