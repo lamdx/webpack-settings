@@ -39,6 +39,7 @@
     <LogList />
     <ViewAll :left="'文件查看'" :right="'查看全部'" @go="goback"></ViewAll>
     <ListHeader></ListHeader>
+    <TabScroll v-model="tabscrollType"></TabScroll>
   </div>
 </template>
 
@@ -233,7 +234,8 @@ export default {
           count: 12
         }
       ],
-      tabVal: ''
+      tabVal: '',
+      tabscrollType: '01'
     };
   },
   watch: {
