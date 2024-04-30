@@ -72,7 +72,7 @@ export default {
       this.state = len ? '' : 'error';
       this.listData = list;
     },
-    async handleQuery(done, isRefresh) {
+    async handleQuery(done, isRefresh, needLoading = true) {
       try {
         const {
           pageSettings,
@@ -85,7 +85,7 @@ export default {
         let params = {};
         if (isRefresh) {
           this.page = pageSettings.pageNumber;
-          this.state = 'loading';
+          this.state = needLoading ? 'loading' : '';
         }
         params[pageSettings.pageKey] = this.page;
         params[pageSettings.sizeKey] = this.size;
@@ -97,10 +97,10 @@ export default {
           }
         }
         const res = await requestMethod(params);
-        const data = handleResult(res);
+        const data = await handleResult(res);
         this.listData = isRefresh ? data : this.listData.concat(data);
         this.setState(this.listData);
-        this.$emit('request-success', this.listData);
+        this.$emit('request-success', this.listData, res);
         const len = data?.length || 0;
         let isDone = len < this.size || len > this.size; // 如果超出了预定长度关闭加载更多，不支持分页处理
         if (!isDone) {
@@ -121,6 +121,9 @@ export default {
     },
     init() {
       this.handleQuery(null, true);
+    },
+    onPageRefresh(done) {
+      this.handleQuery(done, true, false);
     }
   }
 };
