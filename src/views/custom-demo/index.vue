@@ -40,6 +40,15 @@
     <ViewAll :left="'文件查看'" :right="'查看全部'" @go="goback"></ViewAll>
     <ListHeader></ListHeader>
     <TabScroll v-model="tabscrollType"></TabScroll>
+    <MyInput
+      v-model="price"
+      label="价格"
+      :step="0.001"
+      :initVal="5.678"
+      :precision="3"
+      :min="0"
+      :tooltip="tooltip"
+    ></MyInput>
   </div>
 </template>
 
@@ -235,7 +244,8 @@ export default {
         }
       ],
       tabVal: '',
-      tabscrollType: '01'
+      tabscrollType: '01',
+      price: ''
     };
   },
   watch: {
@@ -261,6 +271,9 @@ export default {
     goback() {},
     clickTab(name) {
       console.log(name);
+    },
+    tooltip() {
+      return `预计 ${(this.price * 100).toFixed(3)} 元`;
     }
   }
 };

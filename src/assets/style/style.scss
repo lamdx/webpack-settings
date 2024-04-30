@@ -102,7 +102,12 @@ $color-gray: #f8f8f8;
 $color-up: #e93a40;
 $color-down: #18a85b;
 $color-golden: #f8f4ee;
-$color-gradient-golden: linear-gradient(255deg, #f8f1e8 7%, #fbf5ee 35%, #fffcf9 88%);
+$color-gradient-golden: linear-gradient(
+  255deg,
+  #f8f1e8 7%,
+  #fbf5ee 35%,
+  #fffcf9 88%
+);
 $color-bg-index-up: linear-gradient(360deg, $color-white, $color-primary);
 $color-bg-index-down: linear-gradient(360deg, $color-white, $color-down);
 $color-bg-default: $color-white;
@@ -144,3 +149,12 @@ $color-txt-disabled: #ccc;
 .bg-default {
   background: $color-bg-default !important;
 }
+
+//  position
+.pr {
+  position: relative;
+}
+.pa {
+  position: absolute;
+}
+
