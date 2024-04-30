@@ -12,9 +12,13 @@ const router = new Router({
   linkActiveClass: 'is_active' // 覆盖默认的路由高亮的类，默认的类叫做 router-link-active
 });
 
+let isNoCheck = true;
+// isNoCheck = false;
+
 router.beforeEach((to, from, next) => {
   console.log('to ===', to);
   console.log('from ===', from);
+  if (isNoCheck) return next();
   checkSign()
     .then(res => {
       console.log('res ===', res);
