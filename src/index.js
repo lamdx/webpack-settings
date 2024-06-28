@@ -23,6 +23,15 @@ import './directives';
 // 按需引入 element-ui
 import '@/element-ui';
 
+// 引入 Dialog 组件
+import TheDialog from '@/custom-components/dialog/index.js';
+
+import DialogPlugin from '@/custom-components/modal/index.js';
+Vue.use(DialogPlugin);
+
+// 将 Dialog 组件挂载到 vue 原型上
+Vue.prototype.$dialog = TheDialog;
+
 // 关闭 Vue 在启动时生成生产提示
 Vue.config.productionTip = false;
 

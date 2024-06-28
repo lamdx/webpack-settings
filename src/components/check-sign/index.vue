@@ -10,7 +10,7 @@
       <span>、</span>
       <span class="link">{{ item.name }} > </span>
     </p>
-    <el-button @click="doSign" type="primary">签署协议</el-button>
+    <el-button type="primary" @click="doSign">签署协议</el-button>
   </el-drawer>
 </template>
 
