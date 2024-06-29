@@ -1,24 +1,25 @@
 import Vue from 'vue';
-import DialogComponent from './index.vue';
+import Modal from './index.vue';
 
-const DialogConstructor = Vue.extend(DialogComponent);
+// 创建 Modal 构造器
+let ModalConstrutor = Vue.extend(Modal);
+let instance;
 
-const DialogPlugin = {
-  install(Vue) {
-    const instance = new DialogConstructor({
-      el: document.createElement('div')
-    });
-    document.body.appendChild(instance.$el);
-
-    Vue.prototype.$modal = {
-      open(options) {
-        instance.open(options);
-      },
-      close() {
-        instance.close();
-      }
+const modal = function (options = {}) {
+  // 设置默认参数为对象，如果参数为字符串，参数中 message 属性等于该参数，回调函数为空
+  if (typeof options === 'string') {
+    options = {
+      content: options,
+      onOk: () => {},
+      onCancel: () => {}
     };
   }
+  // 创建实例
+  instance = new ModalConstrutor({
+    data: options
+  });
+  // 将实例挂载到 body 下
+  document.body.appendChild(instance.$mount().$el);
 };
 
-export default DialogPlugin;
+export default modal;

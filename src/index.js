@@ -23,14 +23,14 @@ import './directives';
 // 按需引入 element-ui
 import '@/element-ui';
 
-// 引入 Dialog 组件
-import TheDialog from '@/custom-components/dialog/index.js';
+// 引入 Modal 组件
+import Modal from '@/custom-components/modal/index.js';
 
-import DialogPlugin from '@/custom-components/modal/index.js';
-Vue.use(DialogPlugin);
+// 将 Modal 组件挂载到 vue 原型上
+Vue.prototype.$modal = Modal;
 
-// 将 Dialog 组件挂载到 vue 原型上
-Vue.prototype.$dialog = TheDialog;
+import ModalPlugin from '@/custom-components/modal2/index.js';
+Vue.use(ModalPlugin);
 
 // 关闭 Vue 在启动时生成生产提示
 Vue.config.productionTip = false;

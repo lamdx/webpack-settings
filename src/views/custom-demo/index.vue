@@ -49,6 +49,20 @@
       :min="0"
       :tooltip="tooltip"
     ></MyInput>
+    <button @click="openModal">Open Modal via js</button>
+    <button @click="showModal = true">Open Modal via v-model</button>
+    <Modal v-model="showModal" :options="modalOptions">
+      <template v-slot:header>
+        <h3>Custom Header</h3>
+      </template>
+      <template>
+        <p>Custom Body Content</p>
+      </template>
+      <template v-slot:footer>
+        <button @click="handleConfirm">Confirm</button>
+        <button @click="handleCancel">Cancel</button>
+      </template>
+    </Modal>
   </div>
 </template>
 
@@ -245,7 +259,19 @@ export default {
       ],
       tabVal: '',
       tabscrollType: '01',
-      price: ''
+      price: '',
+      showModal: false,
+      modalOptions: {
+        header: 'Header via v-model',
+        body: 'Body via v-model',
+        footer: 'Footer via v-model',
+        confirmText: 'Confirm',
+        cancelText: 'Cancel'
+        // onConfirm: this.handleConfirm,
+        // onCancel: this.handleCancel
+        // onConfirm: () => {},
+        // onCancel: () => {}
+      }
     };
   },
   watch: {
@@ -274,6 +300,29 @@ export default {
     },
     tooltip() {
       return `预计 ${(this.price * 100).toFixed(3)} 元`;
+    },
+    openModal() {
+      this.$modal2.open({
+        header: 'Header via JS',
+        body: 'Body via JS',
+        footer: 'Footer via JS',
+        confirmText: 'Confirm',
+        cancelText: 'Cancel',
+        onConfirm: () => {
+          console.log('Confirmed via JS!');
+        },
+        onCancel: () => {
+          console.log('Cancelled via JS!');
+        }
+      });
+    },
+    handleConfirm() {
+      console.log('Confirmed!');
+      this.showModal = false;
+    },
+    handleCancel() {
+      console.log('Cancelled!');
+      this.showModal = false;
     }
   }
 };
