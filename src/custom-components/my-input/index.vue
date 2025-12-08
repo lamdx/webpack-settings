@@ -43,6 +43,8 @@ export default {
     label: { type: String, default: '' },
     placeholder: { type: String, default: '请输入' },
     step: { type: Number, default: 1 },
+    addStep: { type: Number }, // 允许加减步长不一致
+    subtractStep: { type: Number }, // 允许加减步长不一致
     stepStrictly: { type: Boolean, default: false },
     max: { type: Number, default: Infinity },
     min: { type: Number, default: -Infinity },
@@ -221,7 +223,8 @@ export default {
       if (this.userInput) return;
       if (this.inputNumberDisabled || this.maxDisabled) return;
       const value = this.currentValue || 0;
-      const newVal = this._increase(value, this.step);
+      const { addStep, step } = this;
+      const newVal = this._increase(value, addStep ? addStep : step);
       const initVal = this.initVal && !value ? this.initVal : newVal;
       this.setCurrentValue(initVal);
     },
@@ -229,7 +232,8 @@ export default {
       if (this.userInput) return;
       if (this.inputNumberDisabled || this.minDisabled) return;
       const value = this.currentValue || 0;
-      const newVal = this._decrease(value, this.step);
+      const { subtractStep, step } = this;
+      const newVal = this._decrease(value, subtractStep ? subtractStep : step);
       this.setCurrentValue(newVal);
     },
     setCurrentValue(newVal) {
