@@ -76,6 +76,11 @@ export default {
       console.log('vm ===', vm);
     });
   },
+  computed: {
+    tooltip() {
+      return `预计 ${(this.price * 100).toFixed(3)} 元`;
+    }
+  },
   data() {
     return {
       content:
@@ -297,9 +302,6 @@ export default {
     goback() {},
     clickTab(name) {
       console.log(name);
-    },
-    tooltip() {
-      return `预计 ${(this.price * 100).toFixed(3)} 元`;
     },
     openModal() {
       this.$modal2.open({

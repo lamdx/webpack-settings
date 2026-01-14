@@ -5,7 +5,7 @@
       <div class="step" :class="{ disabled: inputNumberDisabled }">
         <transition name="fade">
           <div class="tips" v-show="timeId && currentValue">
-            <div v-html="tooltip && tooltip()"></div>
+            <div v-html="tooltip || onceTooltip"></div>
             <slot name="transition"></slot>
           </div>
         </transition>
@@ -33,6 +33,12 @@
       </div>
     </div>
     <slot></slot>
+    <div
+      v-if="error && showError"
+      class="flex flex-justify-end pd-t-16 font24 txt-up"
+    >
+      {{ error }}
+    </div>
   </div>
 </template>
 
@@ -58,7 +64,8 @@ export default {
       }
     },
     format: { type: [Boolean, Function], default: false },
-    tooltip: { type: Function },
+    tooltip: { type: String, default: '' },
+    oncetooltip: { type: String, default: '' },
     validator: { type: Function, default: () => {} },
     initVal: {
       type: Number,
@@ -67,6 +74,7 @@ export default {
       }
     },
     color: { type: String, default: '' },
+    error: { type: String, default: '' },
     otherAnimation: {}
   },
   data() {
@@ -74,7 +82,9 @@ export default {
       isFocus: false,
       currentValue: 0,
       userInput: null,
-      timeId: null
+      timeId: null,
+      showError: false,
+      errorTimeId: null
     };
   },
   computed: {
@@ -123,13 +133,14 @@ export default {
 
       if (typeof currentValue === 'number') {
         if (this.stepStrictly) {
-          const stepPrecision = this.getPrecision(this.step);
-          const precisionFactor = Math.pow(10, stepPrecision);
-          currentValue =
-            (Math.round(currentValue / this.step) *
-              precisionFactor *
-              this.step) /
-            precisionFactor;
+          // const stepPrecision = this.getPrecision(this.step);
+          // const precisionFactor = Math.pow(10, stepPrecision);
+          // currentValue =
+          //   (Math.round(currentValue / this.step) *
+          //     precisionFactor *
+          //     this.step) /
+          //   precisionFactor;
+          currentValue = this.floorByStep(currentValue, this.step);
         }
 
         if (this.precision !== undefined) {
@@ -160,11 +171,12 @@ export default {
           }
 
           if (this.stepStrictly) {
-            const stepPrecision = this.getPrecision(this.step);
-            const precisionFactor = Math.pow(10, stepPrecision);
-            newVal =
-              (Math.round(newVal / this.step) * precisionFactor * this.step) /
-              precisionFactor;
+            // const stepPrecision = this.getPrecision(this.step);
+            // const precisionFactor = Math.pow(10, stepPrecision);
+            // newVal =
+            //   (Math.round(newVal / this.step) * precisionFactor * this.step) /
+            //   precisionFactor;
+            currentValue = this.floorByStep(currentValue, this.step);
           }
 
           if (this.precision !== undefined) {
@@ -179,8 +191,26 @@ export default {
         this.$emit('input', newVal);
       }
     },
-    otherAnimation(val) {
-      val && this.animation();
+    tooltip: {
+      handler(val) {
+        if (val) {
+          this.setTimeId();
+        }
+      }
+    },
+    otherAnimation: {
+      handler(val) {
+        if (val) {
+          this.animation();
+        }
+      }
+    },
+    onceTooltip: {
+      handler(val) {
+        if (val) {
+          this.setTimeId();
+        }
+      }
     }
   },
   methods: {
@@ -245,6 +275,14 @@ export default {
       if (newVal <= this.min) newVal = this.min;
       // if (oldVal === newVal) return
       this.userInput = null;
+      this.showError = newVal === 0;
+      if (this.error) {
+        clearTimeout(this.errorTimeId);
+        this.errorTimeId = setTimeout(() => {
+          clearTimeout(this.errorTimeId);
+          this.showError = false;
+        }, 5000);
+      }
       this.$emit('input', newVal);
       // this.$emit('change', newVal, oldVal)
       this.currentValue = newVal;
@@ -280,15 +318,32 @@ export default {
     },
     animation() {
       if (this.tooltip) {
-        clearTimeout(this.timeId);
-        this.timeId = setTimeout(() => {
-          clearTimeout(this.timeId);
-          this.timeId = null;
-        }, 1500);
+        this.setTimeId();
       }
+    },
+    setTimeId() {
+      clearTimeout(this.timeId);
+      this.timeId = setTimeout(() => {
+        clearTimeout(this.timeId);
+        this.timeId = null;
+      }, 1500);
     },
     clearContent() {
       this.setCurrentValue('');
+    },
+    floorByStep(value, step) {
+      const multiplier = Math.max(
+        this.getPrecision(value),
+        this.getPrecision(step)
+      );
+      const precisionFactor = Math.pow(10, multiplier);
+      const priceInt = Math.round(value * precisionFactor);
+      const stepInt = Math.round(this.step * precisionFactor);
+      const scaledInt = Math.floor(priceInt / stepInt);
+      const resultInt = scaledInt * stepInt;
+      const result = resultInt / precisionFactor;
+
+      return Number(result.toFixed(multiplier));
     }
   }
 };
