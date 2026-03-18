@@ -5,8 +5,13 @@
       <div class="step" :class="{ disabled: inputNumberDisabled }">
         <transition name="fade">
           <div class="tips" v-show="timeId && currentValue">
-            <div v-html="tooltip || onceTooltip"></div>
+            <div v-html="tooltip"></div>
             <slot name="transition"></slot>
+          </div>
+        </transition>
+        <transition name="fade">
+          <div class="tips" v-show="timeId && onceTooltip">
+            <div v-html="onceTooltip"></div>
           </div>
         </transition>
         <div class="sub" :class="{ disabled: minDisabled }" @click="decrease">
